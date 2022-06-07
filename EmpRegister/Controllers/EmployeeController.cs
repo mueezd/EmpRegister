@@ -43,9 +43,9 @@ namespace EmpRegister.Controllers
         }
 
         // GET: Employee/Create
-        public IActionResult Create()
+        public IActionResult AddOrEdit(int Id = 0)
         {
-            return View();
+            return View(new Employee());
         }
 
         // POST: Employee/Create
