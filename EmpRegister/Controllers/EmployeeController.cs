@@ -45,7 +45,15 @@ namespace EmpRegister.Controllers
         // GET: Employee/Create
         public IActionResult AddOrEdit(int Id = 0)
         {
-            return View(new Employee());
+            if(Id == 0)
+            {
+                return View(new Employee());
+            }
+            else
+            {
+                return View(_context.Employees.Find(Id));
+            }
+            
         }
 
         // POST: Employee/Create
@@ -53,36 +61,43 @@ namespace EmpRegister.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("EmpId,FullName,EmpCode,Position,CompanyName,MobileNo,EmailId")] Employee employee)
+        public async Task<IActionResult> AddOrEdit([Bind("EmpId,FullName,EmpCode,Position,CompanyName,MobileNo,EmailId")] Employee employee)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(employee);
+                if(employee.EmpId == 0)
+                {
+                    _context.Add(employee);
+                }
+                else
+                {
+                    _context.Update(employee);
+                }
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(employee);
         }
 
-        // GET: Employee/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //// GET: Employee/Edit/5
+        //public async Task<IActionResult> Edit(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var employee = await _context.Employees.FindAsync(id);
-            if (employee == null)
-            {
-                return NotFound();
-            }
-            return View(employee);
-        }
+        //    var employee = await _context.Employees.FindAsync(id);
+        //    if (employee == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    return View(employee);
+        //}
 
-        // POST: Employee/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //// POST: Employee/Edit/5
+        //// To protect from overposting attacks, enable the specific properties you want to bind to.
+        //// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("EmpId,FullName,EmpCode,Position,CompanyName,MobileNo,EmailId")] Employee employee)
@@ -118,19 +133,10 @@ namespace EmpRegister.Controllers
         // GET: Employee/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var employee = await _context.Employees
-                .FirstOrDefaultAsync(m => m.EmpId == id);
-            if (employee == null)
-            {
-                return NotFound();
-            }
-
-            return View(employee);
+            var employee =await _context.Employees.FindAsync(id);
+            _context.Employees.Remove(employee);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         // POST: Employee/Delete/5
